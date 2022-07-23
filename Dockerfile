@@ -1,19 +1,27 @@
-FROM rust:latest as cross
+FROM --platform=$BUILDPLATFORM rust:latest as cross
+
+ARG TARGETARCH
 
 WORKDIR /usr/src/seed-otp
+COPY hack/platform.sh .
 
+RUN ./platform.sh
 RUN rustup component add rustfmt
-RUN rustup target add x86_64-unknown-linux-gnu
-RUN apt-get update -y && apt-get install -y unzip
+RUN rustup target add "$(cat /.platform)"
+
+RUN apt-get update -y && apt-get install -y unzip $(cat /.compiler) && mkdir -p /out
 
 COPY Cargo.toml .
 COPY Cargo.lock .
-
+COPY .cargo/config .cargo/config
 COPY src src
 COPY wordlists wordlists
 
-RUN cargo build --release
+RUN --mount=type=tmpfs,destination=/usr/local/cargo/registry/ \
+  --mount=type=tmpfs,destination=/usr/local/cargo/git/ \
+  cargo build --locked --release --target "$(cat /.platform)"
+RUN cp target/$(cat /.platform)/release/seed-otp /out
 
-FROM gcr.io/distroless/cc
-COPY --from=cross /usr/src/seed-otp/target/release/seed-otp /
+FROM --platform=$TARGETPLATFORM gcr.io/distroless/cc
+COPY --from=cross /out/seed-otp /
 ENTRYPOINT ["./seed-otp"]
