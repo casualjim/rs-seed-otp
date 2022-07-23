@@ -15,4 +15,7 @@ case "${TARGETARCH}" in
 	echo "armv7-unknown-linux-gnueabihf" > /.platform
 	echo "gcc-arm-linux-gnueabihf" > /.compiler
 	;;
+    "ppc64le")
+  echo "powerpc64le-unknown-linux-gnu" > /.platform
+  echo "gcc-powerpc64le-linux-gnu" > /.compiler
 esac
