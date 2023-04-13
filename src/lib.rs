@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Result};
-use clap::clap_derive::ArgEnum;
+use clap::ValueEnum;
 use serde::Serialize;
 use std::{collections::HashMap, str::FromStr, vec};
 
@@ -20,7 +20,7 @@ const KOREAN_WORD_LIST: &str = include_str!("../wordlists/korean.txt");
 #[cfg(feature = "spanish")]
 const SPANISH_WORD_LIST: &str = include_str!("../wordlists/spanish.txt");
 
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum, Debug, Serialize)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug, Serialize)]
 pub enum Language {
     #[cfg(feature = "chinese_simplified")]
     ChineseSimplified,
@@ -153,6 +153,7 @@ pub fn decrypt(
 pub mod key {
 
     use anyhow::{anyhow, Result};
+    use base64::{engine::general_purpose, Engine};
     use rand::Rng;
     use sha2::{Digest, Sha256};
 
@@ -178,12 +179,12 @@ pub mod key {
         hasher.update(key_string.clone());
         let result = hasher.finalize();
         key_string.extend(&result[..4]);
-        base64::encode_config(key_string, base64::URL_SAFE_NO_PAD)
+        general_purpose::URL_SAFE_NO_PAD.encode(&key_string)
     }
 
     pub fn decode<I: Into<String>>(key_string: I) -> Result<(u16, Vec<u16>)> {
         let key_string = key_string.into();
-        let mut decoded = base64::decode_config(&key_string, base64::URL_SAFE_NO_PAD)?;
+        let mut decoded = general_purpose::URL_SAFE_NO_PAD.decode(key_string)?;
         let final_length = decoded.len().saturating_sub(4);
         let checksum = decoded.split_off(final_length);
 

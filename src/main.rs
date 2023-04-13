@@ -231,7 +231,7 @@ enum Commands {
         detail: bool,
         #[clap(value_parser)]
         otp_key: Option<String>,
-        #[clap(value_parser, multiple_occurrences(true))]
+
         words: Vec<String>,
     },
     /// Decrypt seed words using an OTP key.
@@ -244,7 +244,7 @@ enum Commands {
         detail: bool,
         #[clap(value_parser)]
         otp_key: Option<String>,
-        #[clap(value_parser, multiple_occurrences(true))]
+
         words: Vec<String>,
     },
 }
