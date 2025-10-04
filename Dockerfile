@@ -13,7 +13,7 @@ RUN apt-get update -y && apt-get install -y unzip $(cat /.compiler) && mkdir -p 
 
 COPY Cargo.toml .
 COPY Cargo.lock .
-COPY .cargo/config .cargo/config
+COPY .cargo/config.toml .cargo/config.toml
 COPY src src
 COPY wordlists wordlists
 
@@ -24,4 +24,4 @@ RUN cp target/$(cat /.platform)/release/seed-otp /out
 
 FROM --platform=$TARGETPLATFORM gcr.io/distroless/cc
 COPY --from=cross /out/seed-otp /
-ENTRYPOINT ["./seed-otp"]
+ENTRYPOINT ["/seed-otp"]
