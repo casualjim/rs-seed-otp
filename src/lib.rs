@@ -158,7 +158,7 @@ pub mod key {
     use sha2::{Digest, Sha256};
 
     fn get_next() -> u16 {
-        rand::thread_rng().gen_range(0..2048)
+        rand::rng().random_range(0..2048)
     }
 
     pub fn generate(num_words: u16) -> Result<String> {

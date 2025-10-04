@@ -223,7 +223,7 @@ enum Commands {
     },
     /// Encrypt seed words using an OTP key.
     Encrypt {
-        #[clap(short, long)]
+        #[clap(short, long, value_enum)]
         language: Language,
         #[clap(short, long)]
         include_options: bool,
@@ -231,7 +231,7 @@ enum Commands {
         detail: bool,
         #[clap(value_parser)]
         otp_key: Option<String>,
-
+        #[clap(value_parser)]
         words: Vec<String>,
     },
     /// Decrypt seed words using an OTP key.
@@ -244,7 +244,7 @@ enum Commands {
         detail: bool,
         #[clap(value_parser)]
         otp_key: Option<String>,
-
+        #[clap(value_parser)]
         words: Vec<String>,
     },
 }
